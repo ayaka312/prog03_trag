@@ -1,5 +1,9 @@
 # prog03_trag
 
+
+vcpkg x-update-baseline --add-initial-baseline
+
+
 OPENSSH=/opt/openssh2
 mkdir -p /opt/openssh2/dist/
 cd ${OPENSSH}
